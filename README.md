@@ -94,10 +94,10 @@ When a generated id is found, then return a 308 status code. If you request this
 1. When you send a shorten url generation request to http://localhost:8080/.
 2. Internally, the `save` method of `UrlShortenerController` will handle this request, including:
 	* Generate a ramdon string as id of the short url
-	* Save a mapping between the short url and long url
+	* Save a mapping between the short url and long url into database, Spring Data JPA and H2 is used for data operations
 	* Set the **Location** header(the shorten url link) to the new created resource(`RegisteredUrl`)
     * Return the saved resource into the response body.
-3. Access the short url that extracted from the **Location** from response headers, it will perform the following steps:
+3. Access the short url that extracted from the **Location** from response headers, the `get` method of `UrlShortenerController` will perform the following steps:
     * Extract the id from url, and find the RegisteredUrl by id
     * If it is existed, return 308 status and set **Location** header to the origin url.
     * If it is not existed, return 404 	
