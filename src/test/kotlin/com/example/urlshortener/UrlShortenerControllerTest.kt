@@ -39,7 +39,6 @@ class UrlShortenerControllerTest {
 
         given(this.registeredUrlRepository.findAll())
                 .willReturn(listOf(data))
-        // given(this.shortener.generate()).willReturn("testid")
 
         this.mockMvc
                 .perform(
@@ -49,10 +48,7 @@ class UrlShortenerControllerTest {
                 .andExpect(status().isOk)
 
         verify(this.registeredUrlRepository, times(1)).findAll()
-        // verify(this.shortener, times(1)).generate()
         verifyNoMoreInteractions(this.registeredUrlRepository)
-        // verifyNoMoreInteractions(this.shortener)
-
     }
 
 
@@ -90,7 +86,6 @@ class UrlShortenerControllerTest {
         given(this.registeredUrlRepository.findById(ArgumentMatchers.anyString()))
                 .willReturn(Optional.of(data))
 
-
         this.mockMvc
                 .perform(
                         get("/testid")
@@ -107,10 +102,8 @@ class UrlShortenerControllerTest {
 
     @Test
     fun `get shortenurl for none existing should return 404`() {
-
         given(this.registeredUrlRepository.findById(ArgumentMatchers.anyString()))
                 .willReturn(Optional.empty())
-
 
         this.mockMvc
                 .perform(
@@ -122,7 +115,6 @@ class UrlShortenerControllerTest {
 
         verify(this.registeredUrlRepository, times(1)).findById(ArgumentMatchers.anyString())
         verifyNoMoreInteractions(this.registeredUrlRepository)
-
     }
 
 }

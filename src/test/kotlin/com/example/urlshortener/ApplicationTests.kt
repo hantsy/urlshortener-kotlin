@@ -22,7 +22,6 @@ class ApplicationTests {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    private var token: String? = null
 
     @BeforeAll
     fun setup() {

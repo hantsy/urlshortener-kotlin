@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity.*
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.net.URI
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.servlet.http.HttpServletRequest
@@ -47,11 +46,12 @@ class UrlShortenerController(
     @GetMapping("/{s}")
     fun get(@PathVariable("s") shortenUrl: String): ResponseEntity<String> {
         val registeredUrl = this.urls.findById(shortenUrl)
-        return registeredUrl.map {
-            status(HttpStatus.PERMANENT_REDIRECT)
-                    .header(HttpHeaders.LOCATION, it.originUrl)
-                    .build<String>()
-        }
+        return registeredUrl
+                .map {
+                    status(HttpStatus.PERMANENT_REDIRECT)
+                            .header(HttpHeaders.LOCATION, it.originUrl)
+                            .build<String>()
+                }
                 .orElse(
                         notFound().build()
                 )
