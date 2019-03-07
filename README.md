@@ -1,4 +1,4 @@
-UrlShortener service built with Spring and Kotlin
+# UrlShortener service built with Spring and Kotlin
 
 
 ## Prerequisites
