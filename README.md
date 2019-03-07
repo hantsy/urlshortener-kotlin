@@ -7,13 +7,15 @@
 2. Apache Maven
 
 
-## Get the source codes
+## Source codes
 
 Clone the source codes from Github.
 
 ```bash
 git clone https://github.com/hantsy/urlshortener-kotlins
 ```
+
+The source codes are written with Kotlin, and also demonstrate testing codes with Spring test facilities(`@DataJpaTest`, `WebMvcTest`, Mockito) and RestAssured.
 
 ## Build 
 
