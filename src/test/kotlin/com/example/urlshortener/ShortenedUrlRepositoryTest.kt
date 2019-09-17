@@ -11,10 +11,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 
 @DataJpaTest
-class RegisteredUrlRepositoryTest {
+class ShortenedUrlRepositoryTest {
 
     @Autowired
-    private lateinit var registeredUrlRepository: RegisteredUrlRepository
+    private lateinit var registeredUrlRepository: ShortenedUrlRepository
 
 
     @Autowired
@@ -23,7 +23,7 @@ class RegisteredUrlRepositoryTest {
 
     @BeforeEach
     fun `setup for each tests`() {
-        tem.persist(RegisteredUrl(id ="testid", originUrl = "originUrl"))
+        tem.persist(ShortenedUrl(id ="testid", url = "url"))
     }
 
     @AfterEach
@@ -31,7 +31,7 @@ class RegisteredUrlRepositoryTest {
     }
 
     @Test
-    fun `RegisteredUrlRepository bean should exists`() {
+    fun `ShortenedUrlRepository bean should exists`() {
         assertNotNull(this.registeredUrlRepository)
     }
 

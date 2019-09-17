@@ -18,26 +18,26 @@ import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
 @SpringBootApplication
-class UrlshortenerKotlinApplication
+class UrlShortenerKotlinApplication
 
 fun main(args: Array<String>) {
-    runApplication<UrlshortenerKotlinApplication>(*args)
+    runApplication<UrlShortenerKotlinApplication>(*args)
 }
 
 
 @RestController
 @RequestMapping("")
 class UrlShortenerController(
-        private val urls: RegisteredUrlRepository,
+        private val urls: ShortenedUrlRepository,
         private val shortener: UrlShortener) {
 
     @GetMapping
-    fun all(): ResponseEntity<MutableList<RegisteredUrl>> = ok(this.urls.findAll())
+    fun all(): ResponseEntity<MutableList<ShortenedUrl>> = ok(this.urls.findAll())
 
     @PostMapping
-    fun save(@RequestBody @Valid res: UrlShortenRequest, req: HttpServletRequest): ResponseEntity<RegisteredUrl> {
-        val id = this.shortener.generate()
-        val registeredUrl = RegisteredUrl(id = id, originUrl = res.url)
+    fun save(@RequestBody @Valid res: UrlShortenRequest, req: HttpServletRequest): ResponseEntity<ShortenedUrl> {
+        val id = this.shortener.shorten(res.url)
+        val registeredUrl = ShortenedUrl(id = id, url = res.url)
         val savedRegisteredUrl = this.urls.save(registeredUrl)
         return created(ServletUriComponentsBuilder.fromContextPath(req).path("/$id").build().toUri())
                 .body(savedRegisteredUrl)
@@ -49,7 +49,7 @@ class UrlShortenerController(
         return registeredUrl
                 .map {
                     status(HttpStatus.PERMANENT_REDIRECT)
-                            .header(HttpHeaders.LOCATION, it.originUrl)
+                            .header(HttpHeaders.LOCATION, it.url)
                             .build<String>()
                 }
                 .orElse(
@@ -61,19 +61,19 @@ class UrlShortenerController(
 
 @Component
 class SimpleUrlShortener : UrlShortener {
-    override fun generate(): String {
+    override fun shorten(url:String): String {
         return RandomStringUtils.random(10, true, true)
     }
 }
 
 interface UrlShortener {
-    fun generate(): String
+    fun shorten(url:String): String
 }
 
 
 data class UrlShortenRequest(@URL val url: String)
 
-interface RegisteredUrlRepository : JpaRepository<RegisteredUrl, String>
+interface ShortenedUrlRepository : JpaRepository<ShortenedUrl, String>
 
 @Entity
-data class RegisteredUrl(@Id var id: String? = null, var originUrl: String? = null)
+data class ShortenedUrl(@Id var id: String? = null, var url: String? = null)

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.verifyNoMoreInteractions
-import org.mockito.Mockito.*
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -22,7 +24,7 @@ import java.util.*
 class UrlShortenerControllerTest {
 
     @MockBean
-    private lateinit var registeredUrlRepository: RegisteredUrlRepository
+    private lateinit var registeredUrlRepository: ShortenedUrlRepository
 
     @MockBean
     private lateinit var shortener: UrlShortener
@@ -35,7 +37,7 @@ class UrlShortenerControllerTest {
 
     @Test
     fun `findAll should not be empty`() {
-        val data = RegisteredUrl(id = "testid", originUrl = "originUrl")
+        val data = ShortenedUrl(id = "testid", url = "url")
 
         given(this.registeredUrlRepository.findAll())
                 .willReturn(listOf(data))
@@ -54,11 +56,11 @@ class UrlShortenerControllerTest {
 
     @Test
     fun `generate shorten url and save`() {
-        val data = RegisteredUrl(id = "testid", originUrl = "originUrl")
+        val data = ShortenedUrl(id = "testid", url = "url")
 
-        given(this.registeredUrlRepository.save(ArgumentMatchers.any(RegisteredUrl::class.java)))
+        given(this.registeredUrlRepository.save(ArgumentMatchers.any(ShortenedUrl::class.java)))
                 .willReturn(data)
-        given(this.shortener.generate()).willReturn("testid")
+        given(this.shortener.shorten("url")).willReturn("testid")
 
         val req = UrlShortenRequest("test.com")
 
@@ -72,8 +74,8 @@ class UrlShortenerControllerTest {
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("\$.id", `is`("testid")))
 
-        verify(this.registeredUrlRepository, times(1)).save(ArgumentMatchers.any(RegisteredUrl::class.java))
-        verify(this.shortener, times(1)).generate()
+        verify(this.registeredUrlRepository, times(1)).save(ArgumentMatchers.any(ShortenedUrl::class.java))
+        verify(this.shortener, times(1)).shorten(anyString())
         verifyNoMoreInteractions(this.registeredUrlRepository)
         verifyNoMoreInteractions(this.shortener)
 
@@ -81,7 +83,7 @@ class UrlShortenerControllerTest {
 
     @Test
     fun `get shortenurl should redirect the originurl`() {
-        val data = RegisteredUrl(id = "testid", originUrl = "originUrl")
+        val data = ShortenedUrl(id = "testid", url = "url")
 
         given(this.registeredUrlRepository.findById(ArgumentMatchers.anyString()))
                 .willReturn(Optional.of(data))
@@ -93,7 +95,7 @@ class UrlShortenerControllerTest {
 
                 )
                 .andExpect(status().is3xxRedirection)
-                .andExpect(header().string("Location", "originUrl"))
+                .andExpect(header().string("Location", "url"))
 
         verify(this.registeredUrlRepository, times(1)).findById(ArgumentMatchers.anyString())
         verifyNoMoreInteractions(this.registeredUrlRepository)
